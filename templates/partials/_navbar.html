@@ -20,8 +20,7 @@
         <li {% if '/about' == request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3" {% endif %}>
           <a class="nav-link" href={% url 'pages:about' %}>About</a>
         </li>
-        {% comment %} fix active css {% endcomment %}
-        <li class="nav-item mr-3">
+        <li {% if '/listings/' == request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3" {% endif %}>
           <a class="nav-link" href={% url 'listings:index' %}>
             Inpatient medical services
           </a>
