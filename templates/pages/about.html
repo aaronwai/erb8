@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+<!--load humanize-->
+{% load humanize %}
 <!-- about main content-->
 {% block content %}
 <section id="showcase-inner" class="py-5 text-white">
@@ -52,22 +54,24 @@
         </p>
       </div>
       <div class="col-md-4">
+        {% if mvp_doctors %}
+        {% for mvp_doctor in mvp_doctors %}
         <div class="card">
-          {% comment %} img {% endcomment %}
           <img
             class="card-img-top"
-            src="assets/img/doctors/kyle.jpg"
-            alt="Seller of the month"
+            src="{{mvp_doctor.photo.url}}"
+            alt="Top Doctor of the month"
           />
           <div class="card-body">
-            <h5 class="card-title">Top Doctor</h5>
-            <h6 class="text-secondary">Kyle chan</h6>
+            <h5 class="card-title">{{ forloop.counter | ordinal }} Top Doctor</h5>
+            <h6 class="text-secondary">{{ mvp_doctor.name }}</h6>
             <p class="card-text">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
-              nesciunt amet, illo itaque similique repellat. content.
+             {{ mvp_doctor.description }}
             </p>
           </div>
         </div>
+        {% endfor %}
+        {% endif %}
       </div>
     </div>
   </div>
@@ -80,64 +84,36 @@
     aperiam, unde aliquid at similique!
   </h4>
   <hr />
-  {% comment %} listings {% endcomment %}
-  <a href="listings.html" class="btn btn-secondary text-white btn-lg"
+  <a href="{% url 'listings:index' %}" class="btn btn-secondary text-white btn-lg"
     >View Our Featured Listings</a
   >
 </section>
 
 <!-- Team -->
+{% if doctors %}
 <section id="team" class="py-5">
   <div class="container">
     <h2 class="text-center pb-4">Our Team</h2>
     <div class="row text-center">
+      {% for doctor in doctors %}
       <div class="col-md-4">
-        {% comment %} img {% endcomment %}
         <img
-          src="assets/img/doctors/kyle.jpg"
+          src="{{ doctor.photo.url }}"
           alt=""
           class="rounded-circle mb-3 img-fluid"
           style="object-fit: cover; width: 300px; height: 300px"
         />
-        <h4>Kyle Chan</h4>
+        <h4>{{ doctor.name }}</h4>
         <p class="text-success">
           <i class="fas fa-award text-success"></i> Doctor
         </p>
         <hr />
-        <p><i class="fas fa-phone"></i> (852)-555-5555</p>
-        <p><i class="fas fa-envelope-open"></i> kyle@healthcare.co</p>
+        <p><i class="fas fa-phone"></i> {{ doctor.phone }}</p>
+        <p><i class="fas fa-envelope-open"></i> {{ doctor.email }}</p>
       </div>
-
-      <div class="col-md-4">
-        {% comment %} img {% endcomment %}
-        <img
-          src="assets/img/doctors/emma.jpg"
-          alt=""
-          class="rounded-circle mb-3 img-fluid"
-          style="object-fit: cover; width: 300px; height: 300px"
-        />
-        <h4>Emma Lee</h4>
-        <p class="text-success">Doctor</p>
-        <hr />
-        <p><i class="fas fa-phone"></i> (852)-444-4444</p>
-        <p><i class="fas fa-envelope-open"></i> emma@healthcare.co</p>
-      </div>
-
-      <div class="col-md-4">
-        {% comment %} img {% endcomment %}
-        <img
-          src="assets/img/doctors/jenny.jpg"
-          alt=""
-          class="rounded-circle mb-3 img-fluid"
-          style="object-fit: cover; width: 300px; height: 300px"
-        />
-        <h4>Jenny Cheung</h4>
-        <p class="text-success">Doctor</p>
-        <hr />
-        <p><i class="fas fa-phone"></i> (852)-333-3333</p>
-        <p><i class="fas fa-envelope-open"></i> jenny@healthcare.co</p>
-      </div>
+      {% endfor %}
     </div>
   </div>
 </section>
+{% endif %}
 {% endblock %}
