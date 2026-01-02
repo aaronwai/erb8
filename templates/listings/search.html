@@ -26,7 +26,7 @@
             <div class="col-md-4 mb-3">
               <label class="sr-only">District</label>
               <select name="district" class="form-control">
-                <option selected="true" disabled="disabled">
+                <option {% if not values.district %} selected="true" value="" {% endif %}>
                   District (All)
                 </option>
                 {% for key,value in district_choices.items %}
@@ -38,7 +38,7 @@
             <div class="col-md-4 mb-3">
               <label class="sr-only">Rooms</label>
               <select name="rooms" class="form-control">
-                <option selected="true" disabled="disabled">Rooms (All)</option>
+                <option {% if not values.rooms %} selected="true" value="" {% endif %}>Rooms (All)</option>
                 {% for key,value in rooms_choices.items %}
                 <option value="{{ key }}"  {% if values.rooms == key %} selected="true" {% endif %}>{{value}}</option>
                 {% endfor %}
@@ -46,9 +46,7 @@
             </div>
             <div class="col-md-4 mb-3">
               <select name="room_type" class="form-control" id="type">
-                <option selected="true" disabled="disabled">
-                  Room type (All)
-                </option>
+                <option {% if not values.room_type %} selected="true" value="" {% endif %}>Room type (All)</option>
                 {% for key,value in room_choices.items %}
                 <option value="{{ key }}" {% if values.room_type == key %} selected="true" {% endif %}>{{value}}</option>
                 {% endfor %}
@@ -70,10 +68,10 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
-          <a href="index.html"> <i class="fas fa-home"></i> Home</a>
+          <a href="{% url 'pages:index' %}"> <i class="fas fa-home"></i> Home</a>
         </li>
         <li class="breadcrumb-item">
-          <a href="listings.html">Browse Listings</a>
+          <a href="{% url 'listings:index' %}">Browse Listings</a>
         </li>
         <li class="breadcrumb-item active">Search Results</li>
       </ol>
@@ -84,273 +82,113 @@
 <!-- Listings -->
 <section id="listings" class="py-4">
   <div class="container">
+    <!-- loop listing-->
     <div class="row">
+      {% if listings %}
       <!-- Listing 1 -->
+      {% for listing in listings %}
       <div class="col-md-6 col-lg-4 mb-4">
         <div class="card listing-preview">
-          <img
-            class="card-img-top"
-            src="assets/img/clinics/clinic-1.jpg"
-            alt=""
-          />
+          <img class="card-img-top" src="{{ listing.photo_main.url }}" alt="" />
           <div class="card-img-overlay"></div>
           <div class="card-body">
             <div class="listing-heading text-center">
-              <h4 class="text-primary">Harmony Health Clinic</h4>
+              <h4 class="text-primary">{{ listing.title | title }}</h4>
               <p>
-                <i class="fas fa-map-marker text-secondary"></i> Kowloon Bay
+                <i class="fas fa-map-marker text-secondary"></i>
+                {{listing.district | title}}
               </p>
             </div>
             <hr />
             <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-th-large"></i> Restrooms</div>
+              <div class="col-6">
+                <i class="fas fa-th-large"></i>
+                Services {{listing.service|apnumber | capfirst}}
+              </div>
               <div class="col-6"><i class="fas fa-dumbbell"></i> Treatment</div>
             </div>
             <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-bed"></i> Bedrooms</div>
+              <div class="col-6">
+                <i class="fas fa-bed"></i> rooms {{listing.rooms}}
+              </div>
               <div class="col-6"><i class="fas fa-bath"></i> Bathrooms</div>
             </div>
             <hr />
             <div class="row py-2 text-secondary">
-              <div class="col-12"><i class="fas fa-user"></i> Ms. Ma</div>
+              <div class="col-12">
+                <i class="fas fa-user"></i> {{listing.doctor.name}}
+              </div>
             </div>
             <div class="row text-secondary pb-2">
               <div class="col-12">
-                <i class="fas fa-clock"></i> Reservation required
+                <i class="fas fa-clock"></i> {{listing.list_date | timesince}}
               </div>
             </div>
             <hr />
-            <a href="listing.html" class="btn btn-primary btn-block"
+            {% comment %} listing {% endcomment %}
+            <a
+              href="{% url 'listings:listing' listing.id %}"
+              class="btn btn-primary btn-block"
               >More Info</a
             >
           </div>
         </div>
       </div>
-
-      <!-- Listing 2 -->
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card listing-preview">
-          <img
-            class="card-img-top"
-            src="assets/img/clinics/clinic-2.jpg"
-            alt=""
-          />
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <div class="listing-heading text-center">
-              <h4 class="text-primary">Evercare Medical Center</h4>
-              <p>
-                <i class="fas fa-map-marker text-secondary"></i> Kowloon City
-              </p>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-th-large"></i> Restrooms</div>
-              <div class="col-6"><i class="fas fa-dumbbell"></i> Treatment</div>
-            </div>
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-bed"></i> Bedrooms</div>
-              <div class="col-6"><i class="fas fa-bath"></i> Bathrooms</div>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-12"><i class="fas fa-user"></i> Ms. Chung</div>
-            </div>
-            <div class="row text-secondary pb-2">
-              <div class="col-12">
-                <i class="fas fa-clock"></i> Reservation required
-              </div>
-            </div>
-            <hr />
-            <a href="listing.html" class="btn btn-primary btn-block"
-              >More Info</a
-            >
-          </div>
-        </div>
+      {% endfor %} {% else %}
+      <div class="col-md-12">
+        <h2>No Clinic Available</h2>
       </div>
-
-      <!-- Listing 3 -->
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card listing-preview">
-          <img
-            class="card-img-top"
-            src="assets/img/clinics/clinic-3.jpg"
-            alt=""
-          />
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <div class="listing-heading text-center">
-              <h4 class="text-primary">VitalPath Wellness Clinic</h4>
-              <p>
-                <i class="fas fa-map-marker text-secondary"></i> Sham Shui Po
-              </p>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-th-large"></i> Restrooms</div>
-              <div class="col-6"><i class="fas fa-dumbbell"></i> Treatment</div>
-            </div>
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-bed"></i> Bedrooms</div>
-              <div class="col-6"><i class="fas fa-bath"></i> Bathrooms</div>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-12"><i class="fas fa-user"></i> Ms. Chan</div>
-            </div>
-            <div class="row text-secondary pb-2">
-              <div class="col-12">
-                <i class="fas fa-clock"></i> Reservation required
-              </div>
-            </div>
-            <hr />
-            <a href="listing.html" class="btn btn-primary btn-block"
-              >More Info</a
-            >
-          </div>
-        </div>
-      </div>
-
-      <!-- Listing 4 -->
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card listing-preview">
-          <img
-            class="card-img-top"
-            src="assets/img/clinics/clinic-4.jpg"
-            alt=""
-          />
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <div class="listing-heading text-center">
-              <h4 class="text-primary">BrightCare Health Clinic</h4>
-              <p><i class="fas fa-map-marker text-secondary"></i> Sha Tin</p>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-th-large"></i> Restrooms</div>
-              <div class="col-6"><i class="fas fa-dumbbell"></i> Treatment</div>
-            </div>
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-bed"></i> Bedrooms</div>
-              <div class="col-6"><i class="fas fa-bath"></i> Bathrooms</div>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-12"><i class="fas fa-user"></i> Ms. Chan</div>
-            </div>
-            <div class="row text-secondary pb-2">
-              <div class="col-12">
-                <i class="fas fa-clock"></i> Reservation required
-              </div>
-            </div>
-            <hr />
-            <a href="listing.html" class="btn btn-primary btn-block"
-              >More Info</a
-            >
-          </div>
-        </div>
-      </div>
-
-      <!-- Listing 5 -->
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card listing-preview">
-          <img
-            class="card-img-top"
-            src="assets/img/clinics/clinic-5.jpg"
-            alt=""
-          />
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <div class="listing-heading text-center">
-              <h4 class="text-primary">TrueCare Medical Clinic</h4>
-              <p><i class="fas fa-map-marker text-secondary"></i> Lai King</p>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-th-large"></i> Restrooms</div>
-              <div class="col-6"><i class="fas fa-dumbbell"></i> Treatment</div>
-            </div>
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-bed"></i> Bedrooms</div>
-              <div class="col-6"><i class="fas fa-bath"></i> Bathrooms</div>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-12"><i class="fas fa-user"></i> Ms. Chan</div>
-            </div>
-            <div class="row text-secondary pb-2">
-              <div class="col-12">
-                <i class="fas fa-clock"></i> Reservation required
-              </div>
-            </div>
-            <hr />
-            <a href="listing.html" class="btn btn-primary btn-block"
-              >More Info</a
-            >
-          </div>
-        </div>
-      </div>
-
-      <!-- Listing 6 -->
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card listing-preview">
-          <img
-            class="card-img-top"
-            src="assets/img/clinics/clinic-6.jpg"
-            alt=""
-          />
-          <div class="card-img-overlay"></div>
-          <div class="card-body">
-            <div class="listing-heading text-center">
-              <h4 class="text-primary">Healing Horizons Clinic</h4>
-              <p><i class="fas fa-map-marker text-secondary"></i> Wai Chai</p>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-th-large"></i> Restrooms</div>
-              <div class="col-6"><i class="fas fa-dumbbell"></i> Treatment</div>
-            </div>
-            <div class="row py-2 text-secondary">
-              <div class="col-6"><i class="fas fa-bed"></i> Bedrooms</div>
-              <div class="col-6"><i class="fas fa-bath"></i> Bathrooms</div>
-            </div>
-            <hr />
-            <div class="row py-2 text-secondary">
-              <div class="col-12"><i class="fas fa-user"></i> Ms. Chan</div>
-            </div>
-            <div class="row text-secondary pb-2">
-              <div class="col-12">
-                <i class="fas fa-clock"></i> Reservation required
-              </div>
-            </div>
-            <hr />
-            <a href="listing.html" class="btn btn-primary btn-block"
-              >More Info</a
-            >
-          </div>
-        </div>
-      </div>
+      {% endif %}
     </div>
-
+    <!-- pagination -->
     <div class="row">
       <div class="col-md-12">
+        {% if listings.has_other_pages %}
         <ul class="pagination">
+          {% if listings.has_previous %}
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ listings.previous_page_number }}"
+              >&laquo;</a
+            >
+          </li>
+          {% else %}
           <li class="page-item disabled">
             <a class="page-link" href="#">&laquo;</a>
           </li>
+          {% endif %}
+          <!--for loop page number-->
+          {% for i in listings.paginator.page_range %}
+          <!--page number-->
+          {% if listings.number == i %}
           <li class="page-item active">
-            <a class="page-link" href="#">1</a>
+            <a class="page-link">{{ i }}</a>
           </li>
+          {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+          {% endif %} {% endfor %}
           <li class="page-item">
             <a class="page-link" href="#">2</a>
           </li>
           <li class="page-item">
             <a class="page-link" href="#">3</a>
           </li>
+          {% if listings.has_next %}
           <li class="page-item">
+            <a class="page-link" href="?page={{ listings.next_page_number }}"
+              >&raquo;</a
+            >
+          </li>
+          {% else %}
+          <li class="page-item disabled">
             <a class="page-link" href="#">&raquo;</a>
           </li>
+          {% endif %}
         </ul>
+        {% endif %}
       </div>
     </div>
   </div>
