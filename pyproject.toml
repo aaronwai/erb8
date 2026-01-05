@@ -1,0 +1,15 @@
+# pyproject.toml（项目根目录下）
+[tool.ruff]
+extend = "style, lint, django"
+target-version = "py314"
+exclude = [
+    "venv/",          # 排除虚拟环境目录
+    "migrations/",    # 排除 Django 迁移文件
+    "static/",        # 排除静态文件
+    "media/",         # 排除媒体文件
+    "*.pyc"           # 排除编译后的 pyc 文件
+]
+
+[tool.ruff.format]
+indent_width = 4
+line_length = 120
